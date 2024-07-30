@@ -57,7 +57,7 @@ function Hero() {
                 height={1442}
                 className="rounded-ml shadow-2xl ring-1 ring-gray-900/10"
               />
-              <VideoModule />
+              {/* <VideoModule /> */}
             </div>
           </div>
         </div>
