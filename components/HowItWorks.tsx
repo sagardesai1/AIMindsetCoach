@@ -37,15 +37,18 @@ function HowItWorks() {
         </div>
         <div className="mx-auto grid max-w-2xl mt-10 grid-cols-1 gap-x-16 sm:gap-y-10 lg:mx-0 lg:max-w-none lg:grid-cols-3">
           {features.map((feature) => (
-            <dl className="mt-20 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
-              <div key={feature.name} className="relative">
+            <dl
+              key={feature.name}
+              className="mt-20 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none"
+            >
+              <div className="relative">
                 <feature.icon
                   className="h-20 w-20 text-indigo-600 mb-16 mx-auto"
                   aria-hidden="true"
                 />
                 <dt className="mb-4 font-semibold text-gray-900">
                   {feature.name}
-                </dt>{" "}
+                </dt>
                 <dd>{feature.description}</dd>
               </div>
             </dl>
