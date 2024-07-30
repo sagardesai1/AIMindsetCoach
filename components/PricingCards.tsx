@@ -33,7 +33,7 @@ const tiers = [
 ];
 function PricingCards({ redirect }: { redirect: boolean }) {
   return (
-    <div className="grid grid-cols-2 max-w-4xl mx-auto gap-10">
+    <div className="grid grid-cols-1 lg:grid-cols-2 max-w-lg lg:max-w-4xl mx-auto gap-10">
       {tiers.map((tier, index) => (
         <div
           key={tier.id}
@@ -87,7 +87,7 @@ function PricingCards({ redirect }: { redirect: boolean }) {
           {redirect ? (
             <Link
               href="/home/goals"
-              className="mt-8 block rounded-md bg-indigo-600 px-3.5 py-2 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointed disabled:opacity-80"
+              className="mt-8 block rounded-md bg-indigo-600 px-3.5 py-2 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer disabled:opacity-80"
             >
               Get started today
             </Link>

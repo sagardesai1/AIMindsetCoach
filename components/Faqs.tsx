@@ -1,7 +1,7 @@
 function Faqs() {
   return (
     <section className="bg-white dark:bg-gray-900">
-      <div className="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
+      <div className="py-24 sm:py-32 mx-auto max-w-screen-xl px-6 lg:px-8">
         <h2 className="mb-8  text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
           Frequently asked questions
         </h2>

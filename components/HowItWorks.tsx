@@ -35,15 +35,15 @@ function HowItWorks() {
             start your journey towards a calmer, happier you.
           </p>
         </div>
-        <div className="mx-auto grid max-w-2xl mt-10 grid-cols-1 gap-x-16 sm:gap-y-10 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+        <div className="mx-auto grid max-w-2xl mt-5 lg:mt-10 grid-cols-1 gap-x-16 sm:gap-y-10 lg:mx-0 lg:max-w-none lg:grid-cols-3">
           {features.map((feature) => (
             <dl
               key={feature.name}
-              className="mt-20 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none"
+              className="mt-20 max-w-lg mx-auto space-y-8 text-base leading-7 text-gray-600 lg:max-w-none"
             >
               <div className="relative">
                 <feature.icon
-                  className="h-20 w-20 text-indigo-600 mb-16 mx-auto"
+                  className="h-20 w-20 text-indigo-600 mb-8 lg:mb-16 mx-auto"
                   aria-hidden="true"
                 />
                 <dt className="mb-4 font-semibold text-gray-900">
