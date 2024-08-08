@@ -101,38 +101,51 @@ export const generateLangchainCompletion = async (userStress: string) => {
   console.log("--- Creating a retriever... ---");
   const retriever = pineconeVectorStore.asRetriever();
 
-  // Fetch user technique preferences and messages from Firestore
-  const userPreferences = await fetchUserPreferences();
-  const { liked, disliked } = userPreferences;
-
   // Define the output schema using zod
   const outputParser = StructuredOutputParser.fromZodSchema(
     z.object({
-      empathy: z
-        .string()
-        .describe(
-          "Provide 1 sentence empathizing with user for the situation they are in."
-        ),
-      techniqueActionPlanExplanation: z
-        .string()
-        .describe(
-          "Provide 1 sentence explaining how the technique and action will help the user with in their certain situation."
-        ),
-      encouragement: z
-        .string()
-        .describe(
-          "Provide 1 sentence to encourage the user to start working on the action plan and technique."
-        ),
-      technique: z.object({
-        name: z.string().describe("Name of technique"),
-        description: z.string().describe("Description of technique"),
+      compassion: z.object({
+        empathy: z
+          .string()
+          .describe(
+            "Provide 1 sentence empathizing with user for the situation they are in."
+          ),
+        encouragement: z
+          .string()
+          .describe(
+            "Provide 1 sentence to encourage the user to start working on the action plan and technique."
+          ),
       }),
-      actionPlan: z
-        .array(z.string())
-        .length(3)
-        .describe(
-          "Action plan with 3 steps in bullet point format for how the user can remedy the situation."
-        ),
+      technique: z.object({
+        name: z
+          .string()
+          .describe(
+            "Provide 1 specific technique that is the most personalized to the user’s situation to help them manage their stress."
+          ),
+        description: z
+          .string()
+          .describe(
+            "Provide 1 sentence explaining the technique and how it will help the user with the situation they are in."
+          ),
+        steps: z
+          .array(z.string())
+          .describe(
+            "Provide a detailed numbered list of instructions on how to do the technique."
+          ),
+      }),
+      actionPlan: z.object({
+        description: z
+          .string()
+          .describe(
+            "Provide 1 sentence to encourage the user to start working on the action plan."
+          ),
+        plan: z
+          .array(z.string())
+          .length(3)
+          .describe(
+            "Provide an action plan that has 3 steps in bullet point format for how the user can address the situation at hand such that they are no longer stressed by the situation (this does not need to involve the technique mentioned earlier."
+          ),
+      }),
     })
   );
 
@@ -142,7 +155,7 @@ export const generateLangchainCompletion = async (userStress: string) => {
     ["user", "{input}"],
     [
       "user",
-      "Given my previous liked preferences: \n{user_liked_technique_preferences} and my disliked preferences: \n{user_disliked_technique_preferences} on stress management techniques, generate a search query to look up in order to get correct technique relevant to me.",
+      "Generate a search query to look up in order to get correct technique relevant to me.",
     ],
   ]);
 
@@ -157,10 +170,10 @@ export const generateLangchainCompletion = async (userStress: string) => {
   // Define a prompt template for answering questions based on retrieved context
   console.log("--- Defining a prompt template for answering quesitions... ---");
   const historyAwareRetrievalPrompt = ChatPromptTemplate.fromMessages([
-    "system",
-    "You are an AI Stress Management Coach, your job is to take the user’s problem and give 1 specific destressing technique personalized to the user’s situation on how to manage their stress. Below the technique also provide an action plan that has 3 steps in bullet point format for how the user can remedy the situation. Answer the users question as best as possible in this format: \n{format_instructions}. Also here are the user's previous liked stress stress management techniques followed by their disliked stress management techniques: \n\n{context}",
-    ...liked, // Insert the actual user preference here
-    ...disliked,
+    [
+      "system",
+      "You are an AI Stress Management Coach. Provide 1 specific technique that is the most personalized to the user’s situation to help them manage their stress. Below the technique provide a detailed list of instructions on how to do the technique. Then, provide an action plan that has 3 steps in bullet point format for how the user can address the situation at hand such that they are no longer stressed by the situation (this does not need to involve the technique mentioned earlier). \n\n{context}. Answer the users question as best as possible in this format: \n{format_instructions}.",
+    ],
     ["user", "{input}"],
   ]);
 
@@ -180,8 +193,8 @@ export const generateLangchainCompletion = async (userStress: string) => {
 
   console.log("--- Running the chain with a sample conversation... ---");
   const response = await conversationalRetrievalChain.invoke({
-    user_liked_technique_preferences: liked,
-    user_disliked_technique_preferences: disliked,
+    // user_liked_technique_preferences: liked,
+    // user_disliked_technique_preferences: disliked,
     input: userStress,
     format_instructions: outputParser.getFormatInstructions(),
   });

@@ -17,7 +17,7 @@ const features = [
   {
     name: "Proven Techniques.",
     description:
-      "Our exercises are based on scientifically-proven methods to reduce stress and anxiety, ranging from breathwork and acupressure to visualization and cognitive behavioral therapy.",
+      "Our exercises are based on scientifically-backed methods to reduce stress and anxiety, ranging from breathwork and acupressure to visualization and cognitive behavioral therapy.",
     icon: "ServerIcon",
   },
 ];
@@ -36,9 +36,8 @@ function Features() {
                 Discover a new way to destress
               </p>
               <p className="mt-6 text-lg leading-8 text-gray-600">
-                We’ve spent hundreds of hours curating stress management
-                techniques from the most prominent scientific research so that
-                you don’t have to.
+                We’ve spent hundreds of hours curating scientifically proven
+                stress management techniques so that you don’t have to.
               </p>
               <dl className="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
                 {features.map((feature) => (

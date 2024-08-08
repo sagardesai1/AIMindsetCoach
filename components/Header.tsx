@@ -29,6 +29,12 @@ export default function Example() {
           <SignedIn>
             <div className="flex flex-row gap-14 items-center">
               <Link
+                href="/pricing"
+                className="text-sm font-semibold leading-6 text-gray-900"
+              >
+                Pricing
+              </Link>
+              <Link
                 href="/support"
                 className="text-sm font-semibold leading-6 text-gray-900"
               >

@@ -4,21 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { db } from "@/firebase"; // Adjust the path as necessary
-import {
-  FieldValue,
-  collection,
-  addDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { db, firebaseAuth } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { CircleCheck } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/nextjs";
+import { signInWithCustomToken } from "firebase/auth";
 
-const ContactPage = () => {
+function Support() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+
   const { user } = useUser();
+  const { getToken } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,35 +27,39 @@ const ContactPage = () => {
     }
 
     try {
-      const docRef = await addDoc(collection(db, "contactRequests"), {
-        subject,
-        message,
-        userEmail: user?.emailAddresses,
-        userId: user?.id, // assuming you have the user ID in the session
-        timestamp: serverTimestamp(),
-      });
-      console.log("Document written with ID: ", docRef.id);
-      // Show success message
-      setShowSuccess(true);
-      // Optionally, reset the form
-      setSubject("");
-      setMessage("");
-      // Hide success message after a delay
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 5000); // 5 seconds
-    } catch (e) {
-      console.error("Error adding document: ", e);
+      const token = await getToken({ template: "integration_firebase" });
+      if (token) {
+        await signInWithCustomToken(firebaseAuth, token || "");
+
+        const docRef = await addDoc(collection(db, "contactRequests"), {
+          subject,
+          message,
+          userEmail: user.emailAddresses[0].emailAddress,
+          userId: user.id,
+          timestamp: serverTimestamp(),
+        });
+
+        console.log("Document written with ID: ", docRef.id);
+        setShowSuccess(true);
+        setSubject("");
+        setMessage("");
+
+        setTimeout(() => {
+          setShowSuccess(false);
+        }, 5000); // Hide success message after 5 seconds
+      }
+    } catch (error) {
+      console.error("Error adding document: ", error);
     }
   };
 
   return (
     <div className="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
-      <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-white">
+      <h2 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-center">
         Contact Us
       </h2>
       <form onSubmit={handleSubmit} className="space-y-8">
-        <p className="mb-8 lg:mb-16 font-light text-center text-gray-500 dark:text-gray-400 sm:text-xl">
+        <p className="mb-8 lg:mb-16 text-lg leading-8 text-gray-500 text-center">
           Got a technical issue? Want to send feedback about a beta feature?
           Need details about stress management? Let us know.
         </p>
@@ -103,6 +105,6 @@ const ContactPage = () => {
       )}
     </div>
   );
-};
+}
 
-export default ContactPage;
+export default Support;

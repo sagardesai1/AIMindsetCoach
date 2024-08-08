@@ -1,37 +1,46 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import { ChevronLeft, ThumbsDown, ThumbsUp } from "lucide-react";
-import { updateFeedback } from "@/actions/firestoreActions";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
+import { db } from "@/firebase";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 interface Technique {
-  empathy: string;
-  techniqueActionPlanExplanation: string;
-  encouragement: string;
+  compassion: {
+    empathy: string;
+    encouragement: string;
+  };
   technique: {
     name: string;
     description: string;
+    steps: string[];
   };
-  actionPlan: string[];
+  actionPlan: {
+    description: string;
+    plan: string[];
+  };
 }
 
 const ResultComponent: React.FC = () => {
   const searchParams = useSearchParams();
   const techniqueJSON = searchParams.get("technique");
   const userStress = searchParams.get("userStress");
+  const router = useRouter();
+  const { user } = useUser();
+  const [feedbackDocId, setFeedbackDocId] = useState<string | null>(null);
 
   let parsedTechnique: Technique | null = null;
-  //console.log(techniqueJSON);
+
   // Extract the JSON part from the reply
   const jsonResponse = techniqueJSON?.match(/```json\n([\s\S]*?)\n```/);
   if (!jsonResponse) {
@@ -40,67 +49,48 @@ const ResultComponent: React.FC = () => {
   // Parse the JSON string
   parsedTechnique = JSON.parse(jsonResponse[1]);
 
-  // if (techniqueJSON) {
-  //   try {
-  //     technique = JSON.parse(techniqueJSON);
-  //   } catch (error) {
-  //     console.error("Error parsing technique JSON:", error);
-  //   }
-  // }
+  const handleFeedback = async (liked: boolean, parsedTechnique: Technique) => {
+    if (parsedTechnique && user) {
+      try {
+        // Reference to the user's feedback collection
+        const feedbackCollectionRef = collection(
+          db,
+          "users",
+          user.id,
+          "feedback"
+        );
 
-  // const handleFeedback = async (liked: boolean) => {
-  //   if (parsedTechnique) {
-  //     try {
-  //       await updateFeedback(technique, liked);
-  //       alert("Your feedback has been recorded. Thank you!");
-  //     } catch (error) {
-  //       console.error("Error recording feedback:", error);
-  //       alert("There was an error recording your feedback. Please try again.");
-  //     }
-  //   }
-  // };
+        if (feedbackDocId) {
+          // Feedback document already exists, update it
+          const feedbackDocRef = doc(feedbackCollectionRef, feedbackDocId);
+          await updateDoc(feedbackDocRef, {
+            liked,
+            timestamp: new Date().toISOString(),
+          });
+        } else {
+          // No feedback document exists, create a new one
+          const feedbackData = {
+            liked,
+            technique: parsedTechnique,
+            timestamp: new Date().toISOString(),
+          };
+
+          const docRef = await addDoc(feedbackCollectionRef, feedbackData);
+          setFeedbackDocId(docRef.id); // Save the document ID for future updates
+        }
+
+        alert("Your feedback has been recorded. Thank you!");
+      } catch (error) {
+        console.error("Error recording feedback:", error);
+        alert("There was an error recording your feedback. Please try again.");
+      }
+    }
+  };
 
   if (!parsedTechnique) {
     return <div>Loading...</div>;
   }
 
-  // return (
-  //   <div className="relative flex h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] flex-col text-center justify-center max-w-7xl mx-auto">
-  //     <div className="mb-10">
-  //       <h2 className="italic">"{userStress}"</h2>
-  //     </div>
-
-  //     <div className="border rounded-lg p-6 border-indigo-200 shadow-md">
-  //       <h1 className="font-semibold mb-2">
-  //         Your personalized stress management technique:
-  //       </h1>
-  //       <p className="italic">{parsedTechnique.empathy}</p>
-
-  //       <p className="mt-4">{parsedTechnique.techniqueActionPlanExplanation}</p>
-
-  //       <p className="mt-4 italic">{parsedTechnique.encouragement}</p>
-  //     </div>
-  //     <div className="border rounded-lg p-6 border-indigo-200 shadow-md">
-  //       <h2 className="font-bold mt-4">{parsedTechnique.technique.name}</h2>
-  //       <p>{parsedTechnique.technique.description}</p>
-  //     </div>
-  //     <div className="border rounded-lg p-6 border-indigo-200 shadow-md">
-  //       <h3 className="font-semibold mt-4">Action Plan:</h3>
-  //       <ul className="list-disc list-inside">
-  //         {parsedTechnique.actionPlan.map((step, index) => (
-  //           <li key={index}>{step}</li>
-  //         ))}
-  //       </ul>
-  //     </div>
-  //     <div className="mt-10">
-  //       <span>Did you like this response?</span>
-  //       <div className="flex flex-row gap-20 justify-center mt-6">
-  //         <ThumbsUp onClick={() => handleFeedback(true)} />
-  //         <ThumbsDown onClick={() => handleFeedback(false)} />
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
   return (
     <div className="flex min-h-screen w-full flex-col">
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 mt-2">
@@ -111,6 +101,7 @@ const ResultComponent: React.FC = () => {
                 variant="outline"
                 size="icon"
                 className="h-7 w-7 dark:bg-muted/40"
+                onClick={() => router.push("/mentalhealth")}
               >
                 <ChevronLeft className="h-4 w-4" />
                 <span className="sr-only">Back</span>
@@ -118,22 +109,21 @@ const ResultComponent: React.FC = () => {
               <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
                 AI Stress Management
               </h1>
-              {/* <Badge variant="outline" className="ml-auto sm:ml-0">
-                In stock
-              </Badge> */}
               <div className="hidden items-center gap-2 md:ml-auto md:flex">
                 <Button
                   className="dark:bg-muted/40"
                   variant="outline"
                   size="sm"
+                  onClick={() => router.push("/mentalhealth")}
                 >
                   Discard
                 </Button>
                 <Button
                   className="dark:bg-indigo-500 dark:text-white"
                   size="sm"
+                  onClick={() => router.push("/mentalhealth")}
                 >
-                  Save
+                  Ask Again
                 </Button>
               </div>
             </div>
@@ -151,10 +141,9 @@ const ResultComponent: React.FC = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="leading-8">
-                      {parsedTechnique.empathy}{" "}
-                      {parsedTechnique.techniqueActionPlanExplanation}{" "}
-                      {parsedTechnique.encouragement}
+                    <div className="leading-8 text-gray-900">
+                      {parsedTechnique.compassion.empathy}{" "}
+                      {parsedTechnique.compassion.encouragement}
                     </div>
                   </CardContent>
                 </Card>
@@ -173,14 +162,13 @@ const ResultComponent: React.FC = () => {
                       <div className="leading-8">
                         {parsedTechnique.technique.description}
                       </div>
-                      {/* <div className="grid gap-3">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                          id="description"
-                          defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl nec ultricies ultricies, nunc nisl ultricies nunc, nec ultricies nunc nisl nec nunc."
-                          className="min-h-32"
-                        />
-                      </div> */}
+                      <ol className="list-decimal list-inside leading-8">
+                        {parsedTechnique.technique.steps.map((step, index) => (
+                          <li className="mb-4" key={index}>
+                            {step}
+                          </li>
+                        ))}
+                      </ol>
                     </div>
                   </CardContent>
                 </Card>
@@ -198,15 +186,16 @@ const ResultComponent: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-6">
-                      <div className="grid gap-3">
-                        <ul className="list-disc list-inside leading-8">
-                          {parsedTechnique.actionPlan.map((step, index) => (
-                            <li className="mb-4" key={index}>
-                              {step}
-                            </li>
-                          ))}
-                        </ul>
+                      <div className="leading-8">
+                        {parsedTechnique.actionPlan.description}
                       </div>
+                      <ul className="list-disc list-inside leading-8">
+                        {parsedTechnique.actionPlan.plan.map((step, index) => (
+                          <li className="mb-4" key={index}>
+                            {step}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </CardContent>
                 </Card>
@@ -223,39 +212,12 @@ const ResultComponent: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-row gap-20 justify-center">
-                      {/* <ThumbsUp onClick={() => handleFeedback(true)} />
-                      <ThumbsDown onClick={() => handleFeedback(false)} /> */}
-                      {/* <Image
-                        alt="Product image"
-                        className="aspect-square w-full rounded-md object-cover"
-                        height="300"
-                        src="/placeholder.svg"
-                        width="300"
+                      <ThumbsUp
+                        onClick={() => handleFeedback(true, parsedTechnique)}
                       />
-                      <div className="grid grid-cols-3 gap-2">
-                        <button>
-                          <Image
-                            alt="Product image"
-                            className="aspect-square w-full rounded-md object-cover"
-                            height="84"
-                            src="/placeholder.svg"
-                            width="84"
-                          />
-                        </button>
-                        <button>
-                          <Image
-                            alt="Product image"
-                            className="aspect-square w-full rounded-md object-cover"
-                            height="84"
-                            src="/placeholder.svg"
-                            width="84"
-                          />
-                        </button>
-                        <button className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed">
-                          <Upload className="h-4 w-4 text-muted-foreground" />
-                          <span className="sr-only">Upload</span>
-                        </button>
-                      </div> */}
+                      <ThumbsDown
+                        onClick={() => handleFeedback(false, parsedTechnique)}
+                      />
                     </div>
                   </CardContent>
                 </Card>

@@ -4,19 +4,19 @@ const features = [
   {
     name: "Understand.",
     description:
-      "Our AI coach starts with getting to know about what’s stressing you out. The more you share, the more it helps so this is your place to vent and know you are on the path to feeling better.",
+      "Our AI coach starts with getting to know about what’s stressing you out. The more you share, the more it helps.",
     icon: Sparkles,
   },
   {
     name: "Personalize.",
     description:
-      "Based on your situation, our AI Stress Coach crafts a unique plan just for you, featuring exercises and specific steps you can take to mitigate your stress.",
+      "Based on your situation, our AI Coach crafts a unique plan just for you, featuring exercises and specific steps you can take to mitigate your stress.",
     icon: PencilLine,
   },
   {
     name: "Feedback.",
     description:
-      "Our AI Stress Coach learns from your experiences to continually refine and enhance your personalized plan, ensuring you get the best support on your path to well-being.",
+      "Our AI Coach learns from your feedback to continually refine and improve your personalized plan.",
     icon: AudioLines,
   },
 ];
@@ -30,9 +30,8 @@ function HowItWorks() {
             How it works
           </p>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Discover how our AI Stress Coach can help you manage and reduce
-            stress with a personalized approach. Follow these simple steps to
-            start your journey towards a calmer, happier you.
+            Discover how our AI Coach can help you manage and reduce stress with
+            a personalized approach.
           </p>
         </div>
         <div className="mx-auto grid max-w-2xl mt-5 lg:mt-10 grid-cols-1 gap-x-16 sm:gap-y-10 lg:mx-0 lg:max-w-none lg:grid-cols-3">

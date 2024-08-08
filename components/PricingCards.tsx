@@ -25,9 +25,8 @@ const tiers = [
     features: [
       "Unlimited Personalized Destressing Techniques",
       "Unlimited Personalized Action Plans",
-      "Full Power AI Functionality with Memory Recall",
+      "Full AI Functionality",
       "24-hour, Dedicated Support Response Time",
-      "Exclusive Discord Community Access",
     ],
   },
 ];
@@ -59,6 +58,9 @@ function PricingCards({ redirect }: { redirect: boolean }) {
                   <span className="text-5xl font-bold tracking-tight text-gray-900">
                     {tier.priceMonthly}
                   </span>
+                  <span className="text-md font-bold tracking-tight text-gray-600">
+                    /month
+                  </span>
                 </>
               ) : (
                 <span className="text-5xl font-bold tracking-tight text-gray-900">
@@ -86,7 +88,7 @@ function PricingCards({ redirect }: { redirect: boolean }) {
           </div>
           {redirect ? (
             <Link
-              href="/home/goals"
+              href="/mentalhealth"
               className="mt-8 block rounded-md bg-indigo-600 px-3.5 py-2 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer disabled:opacity-80"
             >
               Get started today

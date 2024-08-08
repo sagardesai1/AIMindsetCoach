@@ -1,21 +1,37 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
-
+"use client";
+import { db } from "@/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Calendar, Hand } from "lucide-react";
+import { useState } from "react";
 
 export default function NewsLetter() {
+  const [email, setEmail] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const docRef = await addDoc(collection(db, "newsletterSubscribers"), {
+        email,
+        timestamp: serverTimestamp(),
+      });
+      console.log("Document written with ID: ", docRef.id);
+      setShowSuccess(true);
+      setEmail("");
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 5000); // Hide success message after 5 seconds
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      setError("Error subscribing. Please try again.");
+      setTimeout(() => {
+        setError("");
+      }, 5000); // Hide error message after 5 seconds
+    }
+  };
+
   return (
     <div className="relative isolate overflow-hidden bg-gray-900 py-16 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -28,7 +44,10 @@ export default function NewsLetter() {
               Stay updated with our latest content and tips to help you manage
               stress effectively. Join our community and never miss an update!
             </p>
-            <div className="mt-6 flex max-w-md gap-x-4">
+            <form
+              onSubmit={handleSubscribe}
+              className="mt-6 flex max-w-md gap-x-4"
+            >
               <label htmlFor="email-address" className="sr-only">
                 Email address
               </label>
@@ -40,6 +59,8 @@ export default function NewsLetter() {
                 placeholder="Enter your email"
                 autoComplete="email"
                 className="min-w-0 flex-auto rounded-md border-0 bg-white/5 px-3.5 py-2 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <button
                 type="submit"
@@ -47,7 +68,13 @@ export default function NewsLetter() {
               >
                 Subscribe
               </button>
-            </div>
+            </form>
+            {showSuccess && (
+              <div className="mt-4 text-sm text-indigo-400">
+                Successfully subscribed!
+              </div>
+            )}
+            {error && <div className="mt-4 text-sm text-red-400">{error}</div>}
           </div>
           <dl className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:pt-2">
             <div className="flex flex-col items-start">

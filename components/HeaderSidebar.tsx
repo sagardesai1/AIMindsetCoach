@@ -24,7 +24,21 @@ function HeaderSidebar() {
             <div className="mb-2 pb-6 border-b">{/* <Logo /> */}</div>
             <div className="space-y-6 mt-4">
               <SignedIn>
-                <div className="">
+                <div className="space-y-6">
+                  <Link
+                    href="/pricing"
+                    className="flex items-center justify-between"
+                  >
+                    <span>Pricing</span>
+                    <ChevronRight className="w-5 h-5" />
+                  </Link>
+                  <Link
+                    href="/support"
+                    className="flex items-center justify-between"
+                  >
+                    <span>Support</span>
+                    <ChevronRight className="w-5 h-5" />
+                  </Link>
                   <Link
                     href="/mentalhealth"
                     className="flex items-center justify-between"

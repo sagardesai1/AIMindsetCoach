@@ -21,14 +21,12 @@ function Faqs() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                What is RewireMind?
+                What is RewiredMind?
               </h3>
               <p className="text-base leading-7 text-gray-600">
-                RewireMind is an AI-powered app designed to help you manage
-                stress by offering personalized techniques, action plans, and
-                messages just for you! By sharing your feedback, you help our AI
-                learn what works best for you, making it more effective over
-                time.
+                RewiredMind is an AI-powered app designed to help you manage
+                stress by offering personalized techniques and action plans
+                based on your specific concerns.
               </p>
             </div>
             <div className="mb-10">
@@ -45,7 +43,7 @@ function Faqs() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                How does RewireMind personalize stress management techniques?
+                How does RewiredMind personalize stress management techniques?
               </h3>
               <p className="text-base leading-7 text-gray-600">
                 RewireMind uses advanced AI algorithms to understand your
@@ -69,7 +67,7 @@ function Faqs() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                Who are the creators of RewireMind?
+                Who are the creators of RewiredMind?
               </h3>
               <p className="text-base leading-7 text-gray-600">
                 We are individuals who have personally experienced the
@@ -106,7 +104,7 @@ function Faqs() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                How much does RewireMind cost?
+                Is there a free trial?
               </h3>
               <p className="text-base leading-7 text-gray-600">
                 RewireMind is free to get started with one free generation! This
@@ -132,10 +130,9 @@ function Faqs() {
                 How can I provide feedback to improve the AI's recommendations?
               </h3>
               <p className="text-base leading-7 text-gray-600">
-                Absolutely! Your privacy and data security are super important
-                to us. RewireMind uses top-notch encryption and security
-                measures to keep your information safe. We're committed to
-                protecting your personal data at all times!
+                RewiredMind is great for helping you with issues at work or in
+                your relationships. For highly acute stressors such as traumatic
+                events we recommend you seek out professional help.
               </p>
             </div>
             <div className="mb-10">
@@ -152,15 +149,12 @@ function Faqs() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                Is my personal data safe with RewireMind?{" "}
+                Is my personal data safe with RewiredMind?{" "}
               </h3>
               <p className="text-base leading-7 text-gray-600">
-                Yes, your privacy and data security are our top priorities.
-                RewireMind uses state-of-the-art encryption and security
-                measures to protect your information. We are committed to
-                maintaining the confidentiality and safety of your personal data
-                at all times. Feel free to adjust these questions and answers to
-                better fit the specific features and tone of your app!
+                Absolutely! Your privacy and data security are super important
+                to us. We're committed to protecting your personal data at all
+                times!
               </p>
             </div>
           </div>
