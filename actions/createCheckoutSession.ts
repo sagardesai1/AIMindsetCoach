@@ -29,7 +29,7 @@ export async function createCheckoutSession(userDetails: UserDetails) {
       },
     });
 
-    await adminDb.collection("users").doc(userId).set({
+    await adminDb.collection("users").doc(userId).update({
       stripeCustomerId: customer.id,
     });
 

@@ -130,7 +130,7 @@ export const generateLangchainCompletion = async (userStress: string) => {
         steps: z
           .array(z.string())
           .describe(
-            "Provide a detailed numbered list of instructions on how to do the technique."
+            "Provide a detailed set of instructions on how to do the technique (do not use bullet points or numbered list to display results)."
           ),
       }),
       actionPlan: z.object({
@@ -143,7 +143,7 @@ export const generateLangchainCompletion = async (userStress: string) => {
           .array(z.string())
           .length(3)
           .describe(
-            "Provide an action plan that has 3 steps in bullet point format for how the user can address the situation at hand such that they are no longer stressed by the situation (this does not need to involve the technique mentioned earlier."
+            "Provide an action plan that has 3 steps (do not use bullet points or numbered list to display results) for how the user can address the situation at hand such that they are no longer stressed by the situation (this does not need to involve the technique mentioned earlier."
           ),
       }),
     })
@@ -172,7 +172,7 @@ export const generateLangchainCompletion = async (userStress: string) => {
   const historyAwareRetrievalPrompt = ChatPromptTemplate.fromMessages([
     [
       "system",
-      "You are an AI Stress Management Coach. Provide 1 specific technique that is the most personalized to the user’s situation to help them manage their stress. Below the technique provide a detailed list of instructions on how to do the technique. Then, provide an action plan that has 3 steps in bullet point format for how the user can address the situation at hand such that they are no longer stressed by the situation (this does not need to involve the technique mentioned earlier). \n\n{context}. Answer the users question as best as possible in this format: \n{format_instructions}.",
+      "You are an AI Stress Management Coach. Provide 1 specific technique that is the most personalized to the user’s situation to help them manage their stress. Below the technique provide a detailed list of instructions on how to do the technique. Then, provide an action plan that has 3 steps for how the user can address the situation at hand such that they are no longer stressed by the situation (this does not need to involve the technique mentioned earlier). \n\n{context}. Answer the users question as best as possible in this format: \n{format_instructions}.",
     ],
     ["user", "{input}"],
   ]);
