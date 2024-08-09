@@ -109,7 +109,7 @@ const YourComponent: React.FC = () => {
             </div>
             <div className="flex-1" />
             <form
-              className="relative flex flex-row items-center p-1 rounded-3xl border bg-background focus-within:ring-1 focus-within:ring-ring focus-within:ring-indigo-300"
+              className="relative flex flex-row items-center p-1 rounded-3xl border bg-background focus-within:ring-1 focus-within:ring-ring focus-within:ring-indigo-200"
               onSubmit={handleSubmit}
             >
               <Textarea

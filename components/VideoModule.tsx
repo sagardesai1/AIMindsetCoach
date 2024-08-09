@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 
 function VideoModule() {
   const [open, setOpen] = useState(false);
@@ -31,7 +31,7 @@ function VideoModule() {
           autoPlay
           className="w-full h-full object-cover"
         >
-          <source src="/NewVideo.mp4" type="video/mp4" />
+          <source src="/hero-demo.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </DialogContent>
