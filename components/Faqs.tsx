@@ -46,11 +46,9 @@ function Faqs() {
                 How does RewiredMind personalize stress management techniques?
               </h3>
               <p className="text-base leading-7 text-gray-600">
-                RewireMind uses advanced AI algorithms to understand your
-                feedback and preferences. It takes into account how you respond
-                to different techniques and keeps getting better at delivering
-                strategies that work for you, ensuring a super personalized
-                experience!
+                RewiredMind uses advanced AI algorithms (large language models)
+                to map your situation to science-backed stress management tools
+                and solution-oriented coaching strategies.
               </p>
             </div>
             <div className="mb-10">
@@ -107,9 +105,9 @@ function Faqs() {
                 Is there a free trial?
               </h3>
               <p className="text-base leading-7 text-gray-600">
-                RewireMind is free to get started with one free generation! This
-                lets you try out the app and see how it can help you before you
-                decide on a subscription. We want to make stress management
+                RewireMind is free to get started with three free generations!
+                This lets you try out the app and see how it can help you before
+                you decide on a subscription. We want to make stress management
                 accessible to everyone!
               </p>
             </div>
@@ -127,7 +125,7 @@ function Faqs() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                How can I provide feedback to improve the AI's recommendations?
+                What types of situations is RewiredMind best at dealing with?
               </h3>
               <p className="text-base leading-7 text-gray-600">
                 RewiredMind is great for helping you with issues at work or in

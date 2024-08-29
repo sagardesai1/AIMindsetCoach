@@ -15,10 +15,35 @@ import useSubscription from "@/hooks/useSubscription";
 import UpgradeBanner from "@/components/UpgradeBanner";
 import useFirebaseAuthToken from "@/hooks/useFirebaseAuthToken";
 import { useToast } from "@/components/ui/use-toast";
+import textToSpeech, { deleteAudioFiles } from "@/actions/speechSDK";
+import {
+  affirmationsCompletion,
+  cbtCompletion,
+  circleOfInfluenceCompletion,
+  journalingCompletion,
+  mindfulMeditationCompletion,
+} from "@/actions/techniqueCompletions";
+
+interface Technique {
+  compassion: {
+    empathy: string;
+    encouragement: string;
+  };
+  technique: {
+    name: string;
+    description: string;
+    steps: string[];
+  };
+  actionPlan: {
+    description: string;
+    plan: string[];
+  };
+}
 
 const YourComponent: React.FC = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isMeditationLoading, setIsMeditationLoading] = useState(false);
   const router = useRouter();
   const { user } = useUser();
   const textAreaRef = useRef<HTMLTextAreaElement>(null); // Explicitly type the ref
@@ -59,13 +84,165 @@ const YourComponent: React.FC = () => {
         return;
       }
 
-      const technique = await getTechnique(message);
+      const techniqueJSON = await getTechnique(message);
+
+      let parsedTechnique: Technique | null = null;
+
+      // Extract the JSON part from the reply
+      const jsonResponse = techniqueJSON?.match(/```json\n([\s\S]*?)\n```/);
+      if (!jsonResponse) {
+        throw new Error("Invalid response format");
+      }
+
+      // Parse the JSON string
+      parsedTechnique = JSON.parse(jsonResponse[1]);
+
+      switch (parsedTechnique?.technique.name.toLowerCase()) {
+        case "mindfulness meditation": {
+          try {
+            console.log(
+              "Received langchain result and parsed. Calling Mindful Meditation now."
+            );
+            const audioTranscription = await mindfulMeditationCompletion(
+              message
+            );
+            console.log("Received Mindful Meditation response.");
+            if (audioTranscription) {
+              console.log("Calling Text to Speech.");
+              const textToSpeechResponse = await textToSpeech(
+                audioTranscription
+              );
+              console.log("Received Text to Speech response.");
+              if (textToSpeechResponse.success) {
+                console.log(
+                  `Audio file saved at: ${textToSpeechResponse.audioFileName}`
+                );
+                const queryParams = `technique=${encodeURIComponent(
+                  JSON.stringify(parsedTechnique)
+                )}&audioFilePath=${encodeURIComponent(
+                  textToSpeechResponse.audioFileName || ""
+                )}`;
+                router.push(`/mindfulnessmeditation?${queryParams}`);
+              } else {
+                console.error("Mindful Meditation failed.");
+              }
+            }
+          } finally {
+            setIsMeditationLoading(false); // Ensure meditation loading state is reset
+          }
+          break;
+        }
+
+        case "journaling": {
+          const journalingResponse = await journalingCompletion(message);
+
+          // Parse the JSON response directly
+          const journaling = JSON.parse(journalingResponse || "");
+
+          const queryParams = `technique=${encodeURIComponent(
+            JSON.stringify(parsedTechnique)
+          )}&journalingJSON=${encodeURIComponent(JSON.stringify(journaling))}`;
+
+          router.push(`/journaling?${queryParams}`);
+          break;
+        }
+
+        case "affirmations": {
+          const affirmationsResponse = await affirmationsCompletion(message);
+
+          const affirmations: string[] = JSON.parse(affirmationsResponse || "");
+
+          // Construct query parameters
+          const queryParams = `technique=${encodeURIComponent(
+            JSON.stringify(parsedTechnique)
+          )}&affirmationsJSON=${encodeURIComponent(
+            JSON.stringify(affirmations)
+          )}`;
+
+          // Navigate to the affirmations page
+          router.push(`/affirmations?${queryParams}`);
+          break;
+        }
+
+        case "cognitive behavior therapy - challenging negative thoughts": {
+          const cbtResponse = await cbtCompletion(message);
+
+          const cbt = JSON.parse(cbtResponse || "");
+
+          const queryParams = `technique=${encodeURIComponent(
+            JSON.stringify(parsedTechnique)
+          )}&cbtJSON=${encodeURIComponent(JSON.stringify(cbt))}`;
+
+          router.push(`/cbt?${queryParams}`);
+          break;
+        }
+
+        case "circle of influence": {
+          const circleofinfluenceResponse = await circleOfInfluenceCompletion(
+            message
+          );
+
+          const circleofinfluence = JSON.parse(circleofinfluenceResponse || "");
+
+          const queryParams = `technique=${encodeURIComponent(
+            JSON.stringify(parsedTechnique)
+          )}&circleOfInfluenceJSON=${encodeURIComponent(
+            JSON.stringify(circleofinfluence)
+          )}`;
+
+          router.push(`/circleofinfluence?${queryParams}`);
+          break;
+        }
+
+        // case "4-7-8 breathing technique": {
+        //   const queryParams = `technique=${encodeURIComponent(
+        //     JSON.stringify(parsedTechnique)
+        //   )}&audioFilePath=${encodeURIComponent("")}`;
+        //   router.push(`/breathing?${queryParams}`);
+        //   break;
+        // }
+
+        // case "5-4-3-2-1 grounding technique": {
+        //   const queryParams = `technique=${encodeURIComponent(
+        //     JSON.stringify(parsedTechnique)
+        //   )}&audioFilePath=${encodeURIComponent("")}`;
+        //   router.push(`/breathing?${queryParams}`);
+        //   break;
+        // }
+
+        // case "box breathing": {
+        //   const queryParams = `technique=${encodeURIComponent(
+        //     JSON.stringify(parsedTechnique)
+        //   )}&audioFilePath=${encodeURIComponent("")}`;
+        //   router.push(`/breathing?${queryParams}`);
+        //   break;
+        // }
+
+        // case "alternate nostril breathing (nadi shodhana)": {
+        //   const queryParams = `technique=${encodeURIComponent(
+        //     JSON.stringify(parsedTechnique)
+        //   )}&audioFilePath=${encodeURIComponent("")}`;
+        //   router.push(`/breathing?${queryParams}`);
+        //   break;
+        // }
+
+        // case "progressive muscle relaxation": {
+        //   const queryParams = `technique=${encodeURIComponent(
+        //     JSON.stringify(parsedTechnique)
+        //   )}&audioFilePath=${encodeURIComponent("")}`;
+        //   router.push(`/breathing?${queryParams}`);
+        //   break;
+        // }
+
+        default: {
+          const queryParams = `technique=${encodeURIComponent(
+            JSON.stringify(parsedTechnique)
+          )}`;
+          router.push(`/result?${queryParams}`);
+        }
+      }
+
       await new Promise((resolve) => setTimeout(resolve, 3000));
-      router.push(
-        `/result?technique=${encodeURIComponent(
-          technique
-        )}&userStress=${encodeURIComponent(message)}`
-      );
 
       if (!hasActiveMembership) {
         // Manually increment the numOfGenerations field in the Firestore database
@@ -81,7 +258,8 @@ const YourComponent: React.FC = () => {
       }
     } catch (error) {
       console.error("Error generating technique:", error);
-      setIsLoading(false); // Ensure we reset the loading state in case of error
+    } finally {
+      setIsLoading(false); // Ensure loading state is reset
     }
   };
 
@@ -89,7 +267,7 @@ const YourComponent: React.FC = () => {
     <div className="">
       <UpgradeBanner />
       <div className="relative flex h-[calc(100vh-7rem)] min-h-[calc(100vh-7rem)] flex-col rounded-xl p-4 max-w-6xl mx-auto">
-        {!isLoading ? (
+        {!isLoading && !isMeditationLoading ? (
           <>
             <div className="pt-16 w-4/5 mx-auto">
               <h1 className="leading-8 text-2xl font-bold text-gray-900 sm:text-3xl mb-6">
@@ -133,6 +311,16 @@ const YourComponent: React.FC = () => {
               </div>
             </form>
           </>
+        ) : isMeditationLoading ? (
+          <div className="flex flex-col items-center justify-center h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] p-4 text-center mx-auto">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-8">
+              Starting your meditation session.
+            </h2>
+            <p className="text-lg leading-8 text-gray-600 mb-4">
+              We're preparing a personalized meditation to help you relax.
+            </p>
+            <LoadingSpinner />
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] p-4 text-center mx-auto">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-8">

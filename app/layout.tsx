@@ -33,7 +33,7 @@ export default function RootLayout({
         `}
       </Script>
       <ClerkProvider>
-        <html lang="en">
+        <html suppressHydrationWarning lang="en">
           <body className="flex flex-col min-h-screen">
             <ThemeProvider
               attribute="class"

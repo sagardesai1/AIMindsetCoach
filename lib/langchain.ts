@@ -172,7 +172,7 @@ export const generateLangchainCompletion = async (userStress: string) => {
   const historyAwareRetrievalPrompt = ChatPromptTemplate.fromMessages([
     [
       "system",
-      "You are an AI Stress Management Coach. Provide 1 specific technique that is the most personalized to the user’s situation to help them manage their stress. Below the technique provide a detailed list of instructions on how to do the technique. Then, provide an action plan that has 3 steps for how the user can address the situation at hand such that they are no longer stressed by the situation (this does not need to involve the technique mentioned earlier). \n\n{context}. Answer the users question as best as possible in this format: \n{format_instructions}.",
+      "You are an AI Stress Management Coach. Provide 1 specific technique that is the most personalized to the user’s situation to help them manage their stress. Below the technique provide a detailed list of instructions on how to do the technique. Then, provide an action plan that has 3 steps for how the user can address the situation at hand such that they are no longer stressed by the situation (this does not need to involve the technique mentioned earlier). If the ‘Media Type’ is ‘Audio’, generate an SSML transcription that will be used for a guided meditation audio recording. \n\n{context}. Answer the users question as best as possible in this format: \n{format_instructions}.",
     ],
     ["user", "{input}"],
   ]);
@@ -200,8 +200,6 @@ export const generateLangchainCompletion = async (userStress: string) => {
   });
 
   // Print the result to the console
-  console.log("response: ", response);
-  console.log("response.context", response.context);
   console.log("response.context", response.answer);
   return response.answer;
 };

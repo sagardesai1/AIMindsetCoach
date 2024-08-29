@@ -39,10 +39,12 @@ function Hero() {
                 Try for free
               </Link>
               {/* <Link
-                href="https://getwaitlist.com/waitlist/17274"
+                href="https://calendly.com/arulgupta/30min"
+                rel="noopener noreferrer"
+                target="_blank"
                 className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300"
               >
-                Learn more <span aria-hidden="true">→</span>
+                Free consultation <span aria-hidden="true">→</span>
               </Link> */}
             </div>
           </div>
@@ -57,7 +59,7 @@ function Hero() {
                 height={1442}
                 className="rounded-ml shadow-2xl ring-1 ring-gray-900/10"
               />
-              <VideoModule />
+              {/* <VideoModule /> */}
             </div>
           </div>
         </div>

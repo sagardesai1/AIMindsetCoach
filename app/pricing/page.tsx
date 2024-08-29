@@ -19,8 +19,8 @@ const tiers = [
     priceMonthly: null,
     description: "Explore core features at no cost",
     features: [
-      "1 Personalized Destressing Technique",
-      "1 Personalized Action Plan",
+      "3 Personalized Destressing Techniques",
+      "3 Personalized Action Plans",
       "Try AI Functionality",
     ],
   },

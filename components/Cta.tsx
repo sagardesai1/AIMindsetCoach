@@ -21,12 +21,14 @@ function Cta() {
             >
               Try for free
             </Link>
-            {/* <Link
-                href="https://getwaitlist.com/waitlist/17274"
-                className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300"
-              >
-                Learn more <span aria-hidden="true">→</span>
-              </Link> */}
+            <Link
+              href="https://calendly.com/arulgupta/30min"
+              rel="noopener noreferrer"
+              target="_blank"
+              className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300"
+            >
+              Free consultation <span aria-hidden="true">→</span>
+            </Link>
           </div>
         </div>
       </div>

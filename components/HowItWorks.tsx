@@ -14,9 +14,9 @@ const features = [
     icon: PencilLine,
   },
   {
-    name: "Feedback.",
+    name: "Proven Techniques.",
     description:
-      "Our AI Coach learns from your feedback to continually refine and improve your personalized plan.",
+      "Our exercises are based on scientifically-backed methods to reduce stress and anxiety, ranging from meditation and journaling to affirmations and cognitive behavioral therapy.",
     icon: AudioLines,
   },
 ];

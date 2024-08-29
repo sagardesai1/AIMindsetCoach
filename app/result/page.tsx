@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ChevronLeft, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
@@ -14,6 +14,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import AudioPlayer from "@/components/AudioPlayer";
+import { Textarea } from "@/components/ui/textarea";
+import CircleOfInfluence from "@/components/CircleOfInfluence";
 
 interface Technique {
   compassion: {
@@ -32,22 +35,30 @@ interface Technique {
 }
 
 const ResultComponent: React.FC = () => {
-  const searchParams = useSearchParams();
-  const techniqueJSON = searchParams.get("technique");
-  const userStress = searchParams.get("userStress");
   const router = useRouter();
   const { user } = useUser();
   const [feedbackDocId, setFeedbackDocId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const [technique, setTechnique] = useState<Technique | null>(null);
+  const [audioFilePath, setAudioFilePath] = useState<string | null>(null);
 
-  let parsedTechnique: Technique | null = null;
+  useEffect(() => {
+    const encodedTechnique = searchParams.get("technique");
+    const encodedAudioFilePath = searchParams.get("audioFilePath");
 
-  // Extract the JSON part from the reply
-  const jsonResponse = techniqueJSON?.match(/```json\n([\s\S]*?)\n```/);
-  if (!jsonResponse) {
-    throw new Error("Invalid response format");
-  }
-  // Parse the JSON string
-  parsedTechnique = JSON.parse(jsonResponse[1]);
+    if (encodedTechnique) {
+      // Decode and parse the JSON string back to a Technique object
+      const parsedTechnique: Technique = JSON.parse(
+        decodeURIComponent(encodedTechnique)
+      );
+      setTechnique(parsedTechnique);
+    }
+
+    if (encodedAudioFilePath) {
+      // Decode the audio file path
+      setAudioFilePath(decodeURIComponent(encodedAudioFilePath));
+    }
+  }, [searchParams]);
 
   const handleFeedback = async (liked: boolean, parsedTechnique: Technique) => {
     if (parsedTechnique && user) {
@@ -87,7 +98,7 @@ const ResultComponent: React.FC = () => {
     }
   };
 
-  if (!parsedTechnique) {
+  if (!technique) {
     return <div>Loading...</div>;
   }
 
@@ -95,7 +106,7 @@ const ResultComponent: React.FC = () => {
     <div className="flex min-h-screen w-full flex-col">
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 mt-2">
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-          <div className="mx-auto grid max-w-[65rem] flex-1 auto-rows-max gap-4">
+          <div className="mx-auto grid max-w-[80rem] flex-1 auto-rows-max gap-4">
             <div className="flex items-center gap-4">
               <Button
                 variant="outline"
@@ -142,17 +153,71 @@ const ResultComponent: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="leading-8 text-gray-900">
-                      {parsedTechnique.compassion.empathy}{" "}
-                      {parsedTechnique.compassion.encouragement}
+                      {technique.compassion.empathy}{" "}
+                      {technique.compassion.encouragement}
                     </div>
                   </CardContent>
                 </Card>
+                {audioFilePath && (
+                  <Card
+                    x-chunk="dashboard-07-chunk-0"
+                    className="dark:bg-muted/40"
+                  >
+                    <CardHeader>
+                      <CardTitle>Listen to your guided excercise</CardTitle>
+                      <CardDescription>
+                        A personalized guide to help you with the technique
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <AudioPlayer audioFileName={audioFilePath} />
+                    </CardContent>
+                  </Card>
+                )}
+                {true && (
+                  <Card
+                    x-chunk="dashboard-07-chunk-0"
+                    className="dark:bg-muted/40"
+                  >
+                    <CardHeader>
+                      <CardTitle>
+                        Write down your unfiltered thoughts and feelings
+                      </CardTitle>
+                      <CardDescription>
+                        Take this time to be completely honest with yourself,
+                        unravel your deep emotions
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Textarea
+                        className="min-h-96"
+                        placeholder="I feel..."
+                      ></Textarea>
+                    </CardContent>
+                  </Card>
+                )}
+                {true && (
+                  <Card
+                    x-chunk="dashboard-07-chunk-0"
+                    className="dark:bg-muted/40"
+                  >
+                    <CardHeader>
+                      <CardTitle>Your Circle of Influence Worksheet</CardTitle>
+                      <CardDescription>
+                        Try it yourself, start typing in the circles
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <CircleOfInfluence />
+                    </CardContent>
+                  </Card>
+                )}
                 <Card
                   x-chunk="dashboard-07-chunk-0"
                   className="dark:bg-muted/40"
                 >
                   <CardHeader>
-                    <CardTitle>{parsedTechnique.technique.name}</CardTitle>
+                    <CardTitle>{technique.technique.name}</CardTitle>
                     <CardDescription>
                       Your personalized destressing technique
                     </CardDescription>
@@ -160,10 +225,10 @@ const ResultComponent: React.FC = () => {
                   <CardContent>
                     <div className="grid gap-6">
                       <div className="leading-8">
-                        {parsedTechnique.technique.description}
+                        {technique.technique.description}
                       </div>
                       <ol className="list-decimal list-inside leading-8">
-                        {parsedTechnique.technique.steps.map((step, index) => (
+                        {technique.technique.steps.map((step, index) => (
                           <li className="mb-4" key={index}>
                             {step}
                           </li>
@@ -187,10 +252,10 @@ const ResultComponent: React.FC = () => {
                   <CardContent>
                     <div className="grid gap-6">
                       <div className="leading-8">
-                        {parsedTechnique.actionPlan.description}
+                        {technique.actionPlan.description}
                       </div>
                       <ul className="list-disc list-inside leading-8">
-                        {parsedTechnique.actionPlan.plan.map((step, index) => (
+                        {technique.actionPlan.plan.map((step, index) => (
                           <li className="mb-4" key={index}>
                             {step}
                           </li>
@@ -213,10 +278,10 @@ const ResultComponent: React.FC = () => {
                   <CardContent>
                     <div className="flex flex-row gap-20 justify-center">
                       <ThumbsUp
-                        onClick={() => handleFeedback(true, parsedTechnique)}
+                        onClick={() => handleFeedback(true, technique)}
                       />
                       <ThumbsDown
-                        onClick={() => handleFeedback(false, parsedTechnique)}
+                        onClick={() => handleFeedback(false, technique)}
                       />
                     </div>
                   </CardContent>

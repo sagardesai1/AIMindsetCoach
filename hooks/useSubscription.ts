@@ -8,7 +8,7 @@ import { useDocument } from "react-firebase-hooks/firestore";
 import useFirebaseAuthToken from "./useFirebaseAuthToken";
 
 // number of generations the free user is allowed to have
-const FREE_LIMIT = 1;
+const FREE_LIMIT = 3;
 
 function useSubscription() {
   const [hasActiveMembership, setHasActiveMembership] = useState(null);
